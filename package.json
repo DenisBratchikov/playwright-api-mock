@@ -1,0 +1,51 @@
+{
+	"name": "playwright-api-mock",
+	"version": "1.0.0",
+	"description": "An automated API response snapshot tool for Playwright. SnapMock API records network requests during test runs and reuses them as mocks for fast, reliable, and deterministic tests.",
+	"files": [
+		"dist"
+	],
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"format": "bunx biome format src --write",
+		"lint": "bunx biome lint src",
+		"check": "bunx biome check src",
+		"build:ts": "bunx tsc",
+		"build": "bunx tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/DenisBratchikov/snap-mock.git"
+	},
+	"keywords": [
+		"playwright",
+		"api-mocking",
+		"test-automation",
+		"http-mocking",
+		"snapshot-testing",
+		"network-interception",
+		"frontend-testing",
+		"testing-tools",
+		"mock-server"
+	],
+	"author": {
+		"name": "Denis Bratchikov",
+		"url": "https://github.com/DenisBratchikov"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/DenisBratchikov/snap-mock/issues"
+	},
+	"homepage": "https://github.com/DenisBratchikov/snap-mock#readme",
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/bun": "latest"
+	},
+	"private": true,
+	"peerDependencies": {
+		"typescript": "^5",
+		"@playwright/test": "^1.51.0"
+	}
+}
