@@ -67,4 +67,4 @@ class Plugin {
 	}
 }
 
-export const SnapMockPlugin = Plugin;
+export const ApiMockPlugin = Plugin;

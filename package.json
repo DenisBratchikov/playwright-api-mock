@@ -1,7 +1,7 @@
 {
 	"name": "playwright-api-mock",
-	"version": "1.0.0",
-	"description": "An automated API response snapshot tool for Playwright. SnapMock API records network requests during test runs and reuses them as mocks for fast, reliable, and deterministic tests.",
+	"version": "0.1.0",
+	"description": "An automated API response snapshot tool for Playwright. This plugin records API network requests during test runs and reuses them as mocks for fast, reliable, and deterministic tests.",
 	"files": [
 		"dist"
 	],
@@ -12,8 +12,9 @@
 		"format": "bunx biome format src --write",
 		"lint": "bunx biome lint src",
 		"check": "bunx biome check src",
-		"build:ts": "bunx tsc",
-		"build": "bunx tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify"
+		"build": "bunx tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify",
+		"prepublish": "bunx check && bunx build",
+		"publish": "npm login && npm publish --access public"
 	},
 	"repository": {
 		"type": "git",
@@ -36,9 +37,9 @@
 	},
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/DenisBratchikov/snap-mock/issues"
+		"url": "https://github.com/DenisBratchikov/playwright-api-mock/issues"
 	},
-	"homepage": "https://github.com/DenisBratchikov/snap-mock#readme",
+	"homepage": "https://github.com/DenisBratchikov/playwright-api-mock#readme",
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@types/bun": "latest"
