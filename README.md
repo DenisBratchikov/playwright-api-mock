@@ -11,7 +11,7 @@
 ## 📦 Installation
 
 ```shell
-npm add -D playwright-api-recorder
+npm add -D playwright-api-mock
 ```
 
 ## 🛠️ Usage
@@ -23,7 +23,7 @@ Extend Playwright’s page fixture to automatically record and mock API calls:
 ```typescript
 // fixtures.ts
 import { test as base } from '@playwright/test';
-import { ApiMockPlugin } from 'playwright-api-recorder';
+import { ApiMockPlugin } from 'playwright-api-mock';
 
 export const test = base.extend({
   page: async ({ page }, use) => {
@@ -58,7 +58,7 @@ Alternatively, create a standalone API mock fixture for flexible usage:
 
 ```typescript
 import { test as base } from '@playwright/test';
-import { ApiMockPlugin } from 'playwright-api-recorder';
+import { ApiMockPlugin } from 'playwright-api-mock';
 
 export const test = base.extend({
   apiMock: async ({ page }, use) => {
