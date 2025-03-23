@@ -13,7 +13,7 @@
 		"check:fix": "bunx biome check src --fix",
 		"build": "bunx tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify",
 		"prepublish": "bun run check && bun run build",
-		"publish": "npm login && npm publish --access public"
+		"publish": "npm publish --access public"
 	},
 	"repository": {
 		"type": "git",
@@ -43,7 +43,6 @@
 		"@biomejs/biome": "1.9.4",
 		"@types/bun": "latest"
 	},
-	"private": true,
 	"peerDependencies": {
 		"typescript": "^5",
 		"@playwright/test": "^1.51.0"
