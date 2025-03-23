@@ -1,7 +1,7 @@
-import { SnapshotsStore } from './store';
 import type { Page } from '@playwright/test';
-import { ensureError } from './utils';
+import { SnapshotsStore } from './store';
 import type { PluginConfig } from './types';
+import { ensureError } from './utils';
 
 const DEFAULT_CONFIG: PluginConfig = {
 	urlMatch: '**/*',

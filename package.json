@@ -2,9 +2,7 @@
 	"name": "playwright-api-mock",
 	"version": "0.1.0",
 	"description": "An automated API response snapshot tool for Playwright. This plugin records API network requests during test runs and reuses them as mocks for fast, reliable, and deterministic tests.",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"type": "module",
@@ -12,8 +10,9 @@
 		"format": "bunx biome format src --write",
 		"lint": "bunx biome lint src",
 		"check": "bunx biome check src",
+		"check:fix": "bunx biome check src --fix",
 		"build": "bunx tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify",
-		"prepublish": "bunx check && bunx build",
+		"prepublish": "bun run check && bun run build",
 		"publish": "npm login && npm publish --access public"
 	},
 	"repository": {

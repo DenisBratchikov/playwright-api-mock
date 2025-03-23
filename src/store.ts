@@ -1,5 +1,5 @@
-import type { APIResponse } from '@playwright/test';
 import * as fs from 'node:fs';
+import type { APIResponse } from '@playwright/test';
 import type { StoreConfig, StoredSnapshots } from './types';
 
 export class SnapshotsStore {
