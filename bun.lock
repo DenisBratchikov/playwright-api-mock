@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "snap-mock",
+      "name": "playwright-api-mock",
       "devDependencies": {
         "@biomejs/biome": "1.9.4",
         "@types/bun": "latest",
