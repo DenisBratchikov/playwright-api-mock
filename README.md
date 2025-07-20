@@ -1,4 +1,4 @@
-# Playwright API Recorder
+# Playwright API Mock
 
 > A Playwright plugin for seamlessly recording and mocking API responses, accelerating your testing workflow.
 
