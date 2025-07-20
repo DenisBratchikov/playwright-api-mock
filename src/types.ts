@@ -17,4 +17,10 @@ export interface StoreConfig {
 export interface PluginConfig extends StoreConfig {
 	urlMatch: string | RegExp;
 	logLevel: LogLevel;
+	/**
+	 * When true, stored snapshots will be used to fulfill requests.
+	 * When false, responses will always be fetched from the server
+	 * and stored for future use.
+	 */
+	mock: boolean;
 }

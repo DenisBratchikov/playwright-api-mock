@@ -7,6 +7,7 @@ const DEFAULT_CONFIG: PluginConfig = {
 	urlMatch: '**/*',
 	apiSnapshotsPath: 'api_snapshots.json',
 	logLevel: 'info',
+	mock: true,
 };
 
 class Plugin {
@@ -42,7 +43,7 @@ class Plugin {
 			const request = route.request();
 			const url = request.url();
 
-			const storedSnapshot = this.store.getStoredSnapshot(url);
+			const storedSnapshot = this.config.mock ? this.store.getStoredSnapshot(url) : undefined;
 			if (storedSnapshot) {
 				this.log(`[Mocked] ${url}`);
 				return await route.fulfill({
