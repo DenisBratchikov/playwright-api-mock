@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures.js';
-import { startServer } from './server.js';
+import { test } from '../fixtures.js';
+import { startServer } from '../server.js';
 import type { Server } from 'node:http';
 
 let server: Server | null = null;
