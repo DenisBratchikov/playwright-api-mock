@@ -1,50 +1,54 @@
 {
-	"name": "playwright-api-mock",
-	"version": "0.1.0",
-	"description": "An automated API response snapshot tool for Playwright. This plugin records API network requests during test runs and reuses them as mocks for fast, reliable, and deterministic tests.",
-	"files": ["dist"],
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"type": "module",
-	"scripts": {
-		"format": "bunx biome format src --write",
-		"lint": "bunx biome lint src",
-		"check": "bunx biome check src",
-		"check:fix": "bunx biome check src --fix",
-		"build": "bunx tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify",
-		"prepublish": "bun run check && bun run build",
-		"publish": "npm publish --access public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/DenisBratchikov/playwright-api-mock.git"
-	},
-	"keywords": [
-		"playwright",
-		"api-mocking",
-		"test-automation",
-		"http-mocking",
-		"snapshot-testing",
-		"network-interception",
-		"frontend-testing",
-		"testing-tools",
-		"mock-server"
-	],
-	"author": {
-		"name": "Denis Bratchikov",
-		"url": "https://github.com/DenisBratchikov"
-	},
-        "license": "MIT",
-	"bugs": {
-		"url": "https://github.com/DenisBratchikov/playwright-api-mock/issues"
-	},
-	"homepage": "https://github.com/DenisBratchikov/playwright-api-mock#readme",
-	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@types/bun": "latest"
-	},
-	"peerDependencies": {
-		"typescript": "^5",
-		"@playwright/test": "^1.51.0"
-	}
+  "name": "playwright-api-mock",
+  "version": "0.1.0",
+  "description": "An automated API response snapshot tool for Playwright. This plugin records API network requests during test runs and reuses them as mocks for fast, reliable, and deterministic tests.",
+  "files": ["dist"],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "format": "bun x biome format src --write",
+    "lint": "bun x biome lint src",
+    "check": "bun x biome check src",
+    "check:fix": "bun x biome check src --fix",
+    "build": "bun x tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify",
+    "prepublish": "bun run check && bun run build",
+    "publish": "npm publish --access public",
+		"postinstall": "npx playwright install chromium",
+    "demo:test": "playwright test -c test/playwright.config.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DenisBratchikov/playwright-api-mock.git"
+  },
+  "keywords": [
+    "playwright",
+    "api-mocking",
+    "test-automation",
+    "http-mocking",
+    "snapshot-testing",
+    "network-interception",
+    "frontend-testing",
+    "testing-tools",
+    "mock-server"
+  ],
+  "author": {
+    "name": "Denis Bratchikov",
+    "url": "https://github.com/DenisBratchikov"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DenisBratchikov/playwright-api-mock/issues"
+  },
+  "homepage": "https://github.com/DenisBratchikov/playwright-api-mock#readme",
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/bun": "latest",
+    "@playwright/test": "^1.51.0",
+    "express": "^4.21.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5",
+    "@playwright/test": "^1.51.0"
+  }
 }
