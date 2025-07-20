@@ -3,6 +3,7 @@ import { test, expect } from 'bun:test';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import type { APIResponse } from '@playwright/test';
 
 function createTempDir() {
   return mkdtempSync(join(tmpdir(), 'store-'));
@@ -17,7 +18,7 @@ test('stores responses on disk', async () => {
     async json() { return { ok: true }; },
     status() { return 201; },
     headers() { return { 'content-type': 'application/json' }; },
-  } as any;
+  } as unknown as APIResponse;
 
   await store.storeResponse('key', response);
   const saved = JSON.parse(readFileSync(file, 'utf-8'));
@@ -38,7 +39,7 @@ test('applies header filter', async () => {
     async json() { return { a: 1 }; },
     status() { return 200; },
     headers() { return { 'content-type': 'application/json', other: 'x' }; },
-  } as any;
+  } as unknown as APIResponse;
 
   await store.storeResponse('url', response);
   const snap = store.getStoredSnapshot('url');
