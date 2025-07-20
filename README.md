@@ -7,7 +7,7 @@
 - **Instant response mocking** from saved snapshots for faster tests.
 - **Flexible request matching** (wildcards & regular expressions).
 - **Configurable logging** (`silent`, `error`, `info` levels).
-- **Easy integration** with Playwright’s fixture system.
+- **Easy integration** with Playwright's fixture system.
 
 ## 📦 Installation
 
@@ -19,7 +19,7 @@ npm add -D playwright-api-mock
 
 ### ✅ Automatically Record and Mock API Responses
 
-Extend Playwright’s page fixture to automatically record and mock API calls:
+Extend Playwright's page fixture to automatically record and mock API calls:
 
 ```typescript
 // fixtures.ts
@@ -118,8 +118,8 @@ const apiMock = new ApiMockPlugin(page, {
 | `urlMatch`         | `string \| RegExp`                   | `**/*`               | Request URLs to record/mock                      |
 | `apiSnapshotsPath` | `string`                             | `api_snapshots.json` | Path to store/load snapshot files                |
 | `logLevel`         | `'silent' \| 'error' \| 'info'`      | `'info'`             | Level of logging detail                          |
+| `mock`             | `boolean`                            | `true`               | Use stored snapshots instead of real responses  |
 | `getStoredHeaders` | `(headers) => headers \| undefined`  | `undefined`          | Function to modify or filter headers before saving|
-| `mock`             | `boolean`                            | `true`               | Use stored snapshots instead of real responses |
 
 ---
 
@@ -136,11 +136,10 @@ Starts intercepting and recording API responses. Optionally override configurati
    ```bash
    bun run build
    ```
-3. Explore the example Playwright project under [`demo/`](demo/):
+3. Explore the example Playwright project under [`test/demo/`](test/demo/):
    ```bash
-   npm run demo:install
-   npm run demo:start # optional: run the backend server
-   npm run demo:test
+   bun run demo:start # optional: run the backend server
+   bun run demo:test
    ```
 4. Create feature branches for your changes and open a pull request.
 
