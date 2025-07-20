@@ -14,9 +14,8 @@
     "build": "bun x tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify",
     "prepublish": "bun run check && bun run build",
     "publish": "npm publish --access public",
-    "demo:install": "npx playwright install",
-    "demo:start": "node demo/tests/server.js",
-    "demo:test": "playwright test -c demo/playwright.config.ts"
+		"postinstall": "npx playwright install chromium",
+    "demo:test": "playwright test -c test/playwright.config.ts"
   },
   "repository": {
     "type": "git",

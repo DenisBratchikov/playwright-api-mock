@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures';
+import { test } from './fixtures.js';
 import { startServer } from './server.js';
 import type { Server } from 'node:http';
 
