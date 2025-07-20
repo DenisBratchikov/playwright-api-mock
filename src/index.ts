@@ -4,9 +4,10 @@ import type { PluginConfig } from './types';
 import { ensureError } from './utils';
 
 const DEFAULT_CONFIG: PluginConfig = {
-	urlMatch: '**/*',
-	apiSnapshotsPath: 'api_snapshots.json',
-	logLevel: 'info',
+        urlMatch: '**/*',
+        apiSnapshotsPath: 'api_snapshots.json',
+        logLevel: 'info',
+       mock: true,
 };
 
 class Plugin {
@@ -38,20 +39,20 @@ class Plugin {
 			return await customPlugin.record();
 		}
 
-		await this.page.route(this.config.urlMatch, async (route) => {
-			const request = route.request();
-			const url = request.url();
+               await this.page.route(this.config.urlMatch, async (route) => {
+                       const request = route.request();
+                       const url = request.url();
 
-			const storedSnapshot = this.store.getStoredSnapshot(url);
-			if (storedSnapshot) {
-				this.log(`[Mocked] ${url}`);
-				return await route.fulfill({
-					// Content-type?
-					status: storedSnapshot.status,
-					headers: storedSnapshot.headers,
-					body: JSON.stringify(storedSnapshot.body),
-				});
-			}
+                       const storedSnapshot = this.config.mock ? this.store.getStoredSnapshot(url) : undefined;
+                       if (storedSnapshot) {
+                               this.log(`[Mocked] ${url}`);
+                               return await route.fulfill({
+                                       // Content-type?
+                                       status: storedSnapshot.status,
+                                       headers: storedSnapshot.headers,
+                                       body: JSON.stringify(storedSnapshot.body),
+                               });
+                       }
 
 			// Fetch real response and store it
 			try {
