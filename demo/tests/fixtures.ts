@@ -1,5 +1,5 @@
 import { test as base } from '@playwright/test';
-import { ApiMockPlugin } from 'playwright-api-mock';
+import { ApiMockPlugin } from '../../dist/index.js';
 
 export const test = base.extend({
   page: async ({ page }, use) => {

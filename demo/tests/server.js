@@ -1,4 +1,5 @@
 import express from 'express';
+import { fileURLToPath } from 'node:url';
 
 export async function startServer(port = 3000) {
   const app = express();
@@ -27,4 +28,10 @@ export async function startServer(port = 3000) {
   return new Promise((resolve) => {
     const server = app.listen(port, () => resolve(server));
   });
+}
+
+// Allow running this file directly via `node tests/server.js`
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  // eslint-disable-next-line no-console
+  startServer().then(() => console.log('Server running on http://localhost:3000'));
 }

@@ -130,12 +130,11 @@ Starts intercepting and recording API responses. Optionally override configurati
    ```bash
    bun run build
    ```
-3. Explore the example Playwright project in [`demo/`](demo/):
+3. Explore the example Playwright project under [`demo/`](demo/):
    ```bash
-   cd demo
-   npm run install:all
-   npm start # optional: run the backend server
-   npm test
+   npm run demo:install
+   npm run demo:start # optional: run the backend server
+   npm run demo:test
    ```
 4. Create feature branches for your changes and open a pull request.
 

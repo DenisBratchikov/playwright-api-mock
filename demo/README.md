@@ -4,18 +4,18 @@ This folder contains a minimal Playwright project showing how to use **playwrigh
 
 ## Setup
 
-1. Install dependencies and browsers:
+1. Install Playwright browsers:
    ```bash
-   npm run install:all
+   npm run demo:install
    ```
 2. (Optional) start the demo server to explore manually:
    ```bash
-   npm start
+   npm run demo:start
    ```
    The server runs on `http://localhost:3000`.
 3. Run tests (the server is started automatically):
    ```bash
-   npm test
+   npm run demo:test
    ```
 
 The project uses the plugin in `tests/fixtures.ts` to automatically record and mock API calls.
