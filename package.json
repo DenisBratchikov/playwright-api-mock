@@ -34,7 +34,7 @@
 		"name": "Denis Bratchikov",
 		"url": "https://github.com/DenisBratchikov"
 	},
-	"license": "ISC",
+        "license": "MIT",
 	"bugs": {
 		"url": "https://github.com/DenisBratchikov/playwright-api-mock/issues"
 	},
