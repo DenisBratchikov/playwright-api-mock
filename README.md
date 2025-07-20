@@ -94,6 +94,8 @@ test.describe('User Page', () => {
 
 Customize your plugin by passing an options object:
 
+**Note:** This plugin currently records and replays only JSON responses. Requests returning non-JSON content will pass through without being stored.
+
 ```typescript
 const apiMock = new ApiMockPlugin(page, {
   urlMatch: '**/api/**',
