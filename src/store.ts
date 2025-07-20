@@ -33,7 +33,6 @@ export class SnapshotsStore {
 			body,
 		};
 
-		fs.mkdirSync(dirname(this.path), { recursive: true });
 		fs.writeFileSync(this.path, JSON.stringify(this.snapshots, null, 2));
 	}
 }
