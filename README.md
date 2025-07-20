@@ -123,6 +123,22 @@ const apiMock = new ApiMockPlugin(page, {
 
 Starts intercepting and recording API responses. Optionally override configuration per test or fixture.
 
+## 🤝 How to Contribute
+
+1. Fork and clone this repository.
+2. Install dependencies with `bun install` and build the project:
+   ```bash
+   bun run build
+   ```
+3. Explore the example Playwright project in [`demo/`](demo/):
+   ```bash
+   cd demo
+   npm run install:all
+   npm start # optional: run the backend server
+   npm test
+   ```
+4. Create feature branches for your changes and open a pull request.
+
 ## 📜 License
 
 MIT License. See LICENSE for details.

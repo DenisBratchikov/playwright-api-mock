@@ -1,0 +1,16 @@
+{
+  "name": "playwright-api-mock-demo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "install:all": "npm install && npx playwright install",
+    "start": "node tests/server.js"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.51.0",
+    "playwright-api-mock": "file:..",
+    "express": "^4.21.2"
+  }
+}
