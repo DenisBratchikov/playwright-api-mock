@@ -5,22 +5,29 @@ import type { Server } from 'node:http';
 
 let server: Server | null = null;
 
-// This test demonstrates using ApiMockPlugin with the running server
-test('fetch data from example API', async ({ page }) => {
-  // Start server if not already running
-  if (!server) {
-    server = await startServer();
-  }
+test.beforeEach(async () => {
+  server = await startServer();
+});
 
-  try {
-    await page.goto('/');
-    await expect(page.locator('#output')).toHaveText('{"id":1,"name":"John Doe"}');
-  } finally {
-    // Clean up server after test
-    const currentServer = server;
-    if (currentServer) {
-      await new Promise((res) => currentServer.close(res));
-      server = null;
-    }
+test.afterEach(async () => {
+  if (server) {
+    await new Promise((res) => server?.close(res));
+    server = null;
   }
+});
+
+test('fetch data with mocked response', async ({ page, apiMock }) => {
+  await apiMock.record();
+  await page.goto('/');
+  await expect(page.locator('#output')).toHaveText(
+    '{"id":1,"name":"John Doe","email":"john@example.com","role":"admin"}',
+  );
+});
+
+test('fetch data without mocking', async ({ page, apiMock }) => {
+  await apiMock.record({ mock: false });
+  await page.goto('/');
+  await expect(page.locator('#output')).toHaveText(
+    '{"id":1,"name":"John Doe","email":"john@example.com","role":"admin"}',
+  );
 });
