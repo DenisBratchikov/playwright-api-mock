@@ -1,6 +1,6 @@
 {
   "name": "playwright-api-mock",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An automated API response snapshot tool for Playwright. This plugin records API network requests during test runs and reuses them as mocks for fast, reliable, and deterministic tests.",
   "files": ["dist"],
   "main": "dist/index.js",
