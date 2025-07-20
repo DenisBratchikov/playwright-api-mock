@@ -32,6 +32,7 @@ export const test = base.extend({
       urlMatch: '**/api/**',
       apiSnapshotsPath: '__snapshots__/api.json',
       logLevel: 'info',
+      mock: true,
     });
     await apiMock.record();
     await use(page);
@@ -79,6 +80,7 @@ test.describe('User Page', () => {
     await apiMock.record({
       urlMatch: '**/api/user/**',
       apiSnapshotsPath: '__snapshots__/userApi.json',
+      mock: true,
     });
   });
 
@@ -101,6 +103,7 @@ const apiMock = new ApiMockPlugin(page, {
   urlMatch: '**/api/**',
   apiSnapshotsPath: '__snapshots__/api.json',
   logLevel: 'info',
+  mock: true,
   getStoredHeaders: (headers) => {
     // optionally filter or modify headers before storing
     return { 'content-type': headers['content-type'] };
@@ -116,6 +119,7 @@ const apiMock = new ApiMockPlugin(page, {
 | `apiSnapshotsPath` | `string`                             | `api_snapshots.json` | Path to store/load snapshot files                |
 | `logLevel`         | `'silent' \| 'error' \| 'info'`      | `'info'`             | Level of logging detail                          |
 | `getStoredHeaders` | `(headers) => headers \| undefined`  | `undefined`          | Function to modify or filter headers before saving|
+| `mock`             | `boolean`                            | `true`               | Use stored snapshots instead of real responses |
 
 ---
 

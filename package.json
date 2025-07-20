@@ -15,6 +15,7 @@
     "prepublish": "bun run check && bun run build",
     "publish": "npm publish --access public",
 		"postinstall": "npx playwright install chromium",
+		"demo:start": "bun run test/server.js",
     "demo:test": "playwright test -c test/playwright.config.ts"
   },
   "repository": {

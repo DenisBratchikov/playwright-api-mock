@@ -5,7 +5,12 @@ export async function startServer(port = 3000) {
   const app = express();
 
   app.get('/api/user', (_req, res) => {
-    res.json({ id: 1, name: 'John Doe' });
+    res.json({
+      id: 1,
+      name: 'John Doe',
+      email: 'john@example.com',
+      role: 'admin',
+    });
   });
 
   app.get('/', (_req, res) => {
