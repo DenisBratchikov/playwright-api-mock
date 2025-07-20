@@ -1,4 +1,5 @@
 import * as fs from 'node:fs';
+import { dirname } from 'node:path';
 import type { APIResponse } from '@playwright/test';
 import type { StoreConfig, StoredSnapshots } from './types';
 
@@ -14,6 +15,7 @@ export class SnapshotsStore {
 		if (fs.existsSync(this.path)) {
 			this.snapshots = JSON.parse(fs.readFileSync(this.path, 'utf-8'));
 		} else {
+			fs.mkdirSync(dirname(this.path), { recursive: true });
 			this.snapshots = {};
 		}
 	}
@@ -31,6 +33,7 @@ export class SnapshotsStore {
 			body,
 		};
 
+		fs.mkdirSync(dirname(this.path), { recursive: true });
 		fs.writeFileSync(this.path, JSON.stringify(this.snapshots, null, 2));
 	}
 }
