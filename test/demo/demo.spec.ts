@@ -1,20 +1,5 @@
 import { expect } from '@playwright/test';
 import { test } from '../fixtures.js';
-import { startServer } from '../server.js';
-import type { Server } from 'node:http';
-
-let server: Server | null = null;
-
-test.beforeEach(async () => {
-  server = await startServer();
-});
-
-test.afterEach(async () => {
-  if (server) {
-    await new Promise((res) => server?.close(res));
-    server = null;
-  }
-});
 
 test('fetch data with mocked response', async ({ page, apiMock }) => {
   await apiMock.record();
