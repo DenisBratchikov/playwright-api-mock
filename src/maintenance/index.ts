@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
-import { SnapshotsStore, isSnapshotFile } from '../core/store';
-import type { LegacySnapshotFile, SnapshotEntry, SnapshotFile } from '../core/types';
+import { SnapshotsStore, isLegacySnapshotFile, isSnapshotFile } from '../core/store';
+import type { SnapshotEntry, SnapshotFile } from '../core/types';
 import { atomicWriteFile } from '../core/utils';
 
 export interface ValidationResult {
@@ -12,12 +12,13 @@ export interface ValidationResult {
  */
 export const migrateSnapshots = (path: string, targetPath?: string): SnapshotFile | undefined => {
 	if (!fs.existsSync(path)) return undefined;
-	const raw = JSON.parse(fs.readFileSync(path, 'utf-8')) as unknown;
+	const raw = JSON.parse(fs.readFileSync(path, 'utf-8'));
 	if (isSnapshotFile(raw)) {
 		return raw;
 	}
 
-	const migrated = SnapshotsStore.migrateLegacySnapshots(raw as LegacySnapshotFile, { method: 'GET' });
+	if (!isLegacySnapshotFile(raw)) return undefined;
+	const migrated = SnapshotsStore.migrateLegacySnapshots(raw, { method: 'GET' });
 	const destination = targetPath ?? path;
 	atomicWriteFile(destination, JSON.stringify(migrated, null, 2));
 	return migrated;

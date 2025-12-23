@@ -14,6 +14,24 @@ const ensureDir = (path: string) => {
 const readJson = (path: string): unknown => JSON.parse(fs.readFileSync(path, 'utf-8'));
 
 /**
+ * Lightweight guard to distinguish legacy flat snapshot files from the newer structured format.
+ */
+export const isLegacySnapshotFile = (value: unknown): value is LegacySnapshotFile => {
+	return Boolean(
+		value &&
+			typeof value === 'object' &&
+			// legacy snapshots store plain objects keyed by url with status/body fields
+			Object.values(value as Record<string, unknown>).every(
+				(entry) =>
+					entry &&
+					typeof entry === 'object' &&
+					'status' in (entry as Record<string, unknown>) &&
+					'body' in (entry as Record<string, unknown>),
+			),
+	);
+};
+
+/**
  * Snapshot storage supporting single-file and directory layouts.
  */
 export class SnapshotsStore {
@@ -38,8 +56,8 @@ export class SnapshotsStore {
 				const parsed = readJson(this.storagePath);
 				if (isSnapshotFile(parsed)) {
 					this.entries = parsed.entries ?? {};
-				} else if (parsed && typeof parsed === 'object') {
-					this.legacySnapshots = parsed as LegacySnapshotFile;
+				} else if (isLegacySnapshotFile(parsed)) {
+					this.legacySnapshots = parsed;
 					this.entries = SnapshotsStore.migrateLegacySnapshots(this.legacySnapshots, {
 						method: 'GET',
 					}).entries;
@@ -70,7 +88,7 @@ export class SnapshotsStore {
 	/**
 	 * Retrieve a snapshot by key, falling back to legacy layout if present.
 	 */
-	getStoredSnapshot(key: string, legacyKey?: string) {
+	getStoredSnapshot(key: string, legacyKey?: string): SnapshotEntry | LegacySnapshotFile[string] | undefined {
 		return this.entries[key] ?? this.legacySnapshots?.[legacyKey ?? key];
 	}
 

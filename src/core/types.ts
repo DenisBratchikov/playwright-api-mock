@@ -16,6 +16,11 @@ export type LogLevel = 'silent' | 'error' | 'info';
 export type Variant = string | number | boolean | Record<string, unknown>;
 
 /**
+ * Function-based variant resolver signature (request/context parameters optional for flexibility).
+ */
+export type VariantFunction = (req?: Request, context?: HookContext) => Variant | Promise<Variant>;
+
+/**
  * Legacy snapshot layout (flat map keyed by URL).
  */
 export interface StoredSnapshots {
@@ -87,7 +92,7 @@ export interface KeyStrategy {
 export interface RuleConfig {
 	match: RegExp | string | ((req: Request) => boolean | Promise<boolean>);
 	key?: string | ((input: SnapshotKeyInput) => string | Promise<string>);
-	variant?: Variant | (() => Variant | Promise<Variant>) | ((req: Request) => Variant | Promise<Variant>);
+	variant?: Variant | VariantFunction;
 	resolveVariant?: (req: Request, context: HookContext) => Variant | Promise<Variant>;
 	normalizeUrl?: (url: string, context: HookContext) => string | Promise<string>;
 	onRecordResponse?: (body: unknown, context: HookContext) => unknown | Promise<unknown>;
@@ -125,7 +130,7 @@ export interface PluginConfig extends StoreConfig {
 	extractBody?: (req: Request) => Promise<unknown> | unknown;
 	keyFn?: (input: SnapshotKeyInput) => string | Promise<string>;
 	keyStrategy?: KeyStrategy;
-	variant?: Variant | (() => Variant | Promise<Variant>) | ((context: HookContext) => Variant | Promise<Variant>);
+	variant?: Variant | VariantFunction;
 	resolveVariant?: (req: Request, context: HookContext) => Variant | Promise<Variant>;
 	rules?: RuleConfig[];
 	urlNormalization?: UrlNormalizationRules;

@@ -7,8 +7,6 @@ import type {
 	RuleConfig,
 	SnapshotEntry,
 	SnapshotKeyInput,
-	StoredSnapshots,
-	Variant,
 } from './types';
 import {
 	buildDefaultKey,
@@ -40,12 +38,18 @@ const DEFAULT_ON_MISSING: Record<Mode, 'fail' | 'record' | 'passthrough'> = {
 	auto: 'record',
 };
 
+/**
+ * Create a deep-ish copy of snapshot bodies so transform hooks cannot mutate stored state.
+ */
 const cloneBody = (body: unknown): unknown => {
 	if (body === undefined) return body;
 	const stringified = stableStringify(body);
 	return stringified === undefined ? undefined : JSON.parse(stringified);
 };
 
+/**
+ * Narrow stored snapshot values to the structured v2 entry shape.
+ */
 const isSnapshotEntry = (value: unknown): value is SnapshotEntry => {
 	return Boolean(value && typeof value === 'object' && 'response' in (value as Record<string, unknown>));
 };
@@ -65,6 +69,9 @@ export class ApiMockPlugin {
 		this.store = new SnapshotsStore(resolved);
 	}
 
+	/**
+	 * Merge default plugin options with per-invocation overrides without mutating the base config.
+	 */
 	private mergeConfig(base: PluginConfig, extra: Partial<PluginConfig>): PluginConfig {
 		const storage = extra.storage ??
 			base.storage ?? {
@@ -85,6 +92,9 @@ export class ApiMockPlugin {
 		};
 	}
 
+	/**
+	 * Centralized logger to honor the configured log level.
+	 */
 	private log(message: string | Error) {
 		if (this.config.logLevel === 'silent') {
 			return;
@@ -97,6 +107,9 @@ export class ApiMockPlugin {
 		}
 	}
 
+	/**
+	 * Predicate to decide if a request should be intercepted at all.
+	 */
 	private async shouldHandle(req: Request, config: PluginConfig) {
 		if (config.shouldHandleRequest) {
 			return await config.shouldHandleRequest(req);
@@ -104,6 +117,9 @@ export class ApiMockPlugin {
 		return true;
 	}
 
+	/**
+	 * Extract and parse the request body (used for hashing in keys).
+	 */
 	private async extractBody(req: Request, config: PluginConfig) {
 		if (config.extractBody) {
 			return await config.extractBody(req);
@@ -117,6 +133,9 @@ export class ApiMockPlugin {
 		}
 	}
 
+	/**
+	 * Resolve the active variant/persona for the given request, honoring rule-level overrides.
+	 */
 	private async resolveVariant(config: PluginConfig, rule: RuleConfig | undefined, context: HookContext) {
 		if (rule?.resolveVariant) {
 			return await rule.resolveVariant(context.request, context);
@@ -124,10 +143,7 @@ export class ApiMockPlugin {
 		if (rule?.variant) {
 			const variant = rule.variant;
 			if (typeof variant === 'function') {
-				return await (variant as (req: Request, ctx: HookContext) => Variant | Promise<Variant>)(
-					context.request,
-					context,
-				);
+				return await variant(context.request, context);
 			}
 			return variant;
 		}
@@ -137,13 +153,16 @@ export class ApiMockPlugin {
 		if (config.variant) {
 			const variant = config.variant;
 			if (typeof variant === 'function') {
-				return await (variant as (ctx: HookContext) => Variant | Promise<Variant>)(context);
+				return await variant(context.request, context);
 			}
 			return variant;
 		}
 		return undefined;
 	}
 
+	/**
+	 * Normalize URL per global config, then allow rule-specific overrides.
+	 */
 	private async normalizeUrl(rawUrl: string, config: PluginConfig, rule: RuleConfig | undefined, context: HookContext) {
 		const normalized = normalizeUrlDefault(rawUrl, config.urlNormalization);
 		const overridden =
@@ -152,6 +171,9 @@ export class ApiMockPlugin {
 		return overridden ?? normalized;
 	}
 
+	/**
+	 * Decide whether the request body should influence the snapshot key.
+	 */
 	private shouldIncludeBodyHash(method: string, config: PluginConfig) {
 		const strategy = config.keyStrategy;
 		if (!strategy) return false;
@@ -160,6 +182,9 @@ export class ApiMockPlugin {
 		return methods.includes(method.toUpperCase());
 	}
 
+	/**
+	 * Build the snapshot key using overrides (rule/keyFn) or the default strategy.
+	 */
 	private async resolveKey(input: SnapshotKeyInput, config: PluginConfig, rule?: RuleConfig): Promise<string> {
 		if (rule?.key) {
 			if (typeof rule.key === 'string') return rule.key;
@@ -174,18 +199,25 @@ export class ApiMockPlugin {
 		return buildDefaultKey(input);
 	}
 
+	/**
+	 * Find the first matching rule for the request.
+	 */
 	private findRule(config: PluginConfig, req: Request) {
 		return Promise.all(
 			(config.rules ?? []).map(async (rule) => ({ rule, matches: await resolveMatch(rule.match, req) })),
 		).then((results) => results.find((r) => r.matches)?.rule);
 	}
 
+	/**
+	 * Resolve the missing-snapshot behavior based on mode and overrides.
+	 */
 	private onMissingBehavior(config: PluginConfig) {
 		return config.onMissingSnapshot ?? config.onMissingSnapshotBehavior ?? DEFAULT_ON_MISSING[config.mode];
 	}
 
 	/**
 	 * Attach routing to begin record/mock/auto interception.
+	 * This is the primary entry point invoked from tests/fixtures.
 	 */
 	async record(configOverwrite?: Partial<PluginConfig>): Promise<void> {
 		const effectiveConfig = configOverwrite ? this.mergeConfig(this.config, configOverwrite) : this.config;
@@ -225,19 +257,15 @@ export class ApiMockPlugin {
 
 			const storedSnapshot = store.getStoredSnapshot(key, normalizedUrl);
 			if (storedSnapshot) {
-				const baseBody = isSnapshotEntry(storedSnapshot)
-					? storedSnapshot.response.body
-					: (storedSnapshot as StoredSnapshots[string])?.body;
+				const baseBody = isSnapshotEntry(storedSnapshot) ? storedSnapshot.response.body : storedSnapshot?.body;
 				const transformedBody = rule?.onServeResponse
 					? await rule.onServeResponse(cloneBody(baseBody), context)
 					: baseBody;
 
 				const status = isSnapshotEntry(storedSnapshot)
 					? storedSnapshot.response.status
-					: ((storedSnapshot as StoredSnapshots[string])?.status ?? 200);
-				const headers = isSnapshotEntry(storedSnapshot)
-					? storedSnapshot.response.headers
-					: (storedSnapshot as StoredSnapshots[string])?.headers;
+					: (storedSnapshot?.status ?? 200);
+				const headers = isSnapshotEntry(storedSnapshot) ? storedSnapshot.response.headers : storedSnapshot?.headers;
 
 				const bodyToSend =
 					typeof transformedBody === 'string' || transformedBody === undefined
