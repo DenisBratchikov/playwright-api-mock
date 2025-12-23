@@ -1,4 +1,4 @@
-import { ensureError, normalizeUrlDefault, variantToString } from '../src/utils';
+import { ensureError, normalizeUrlDefault, variantToString } from '../src/core/utils';
 import { test, expect } from 'bun:test';
 
 test('returns the same error instance', () => {

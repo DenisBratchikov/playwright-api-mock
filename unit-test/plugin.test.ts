@@ -1,7 +1,7 @@
 import { ApiMockPlugin } from '../src/index';
 import { test, expect } from 'bun:test';
 import type { Page, Route, Request, APIResponse } from '@playwright/test';
-import type { StoredSnapshots } from '../src/types';
+import type { StoredSnapshots } from '../src/core/types';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';

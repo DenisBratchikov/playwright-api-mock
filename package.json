@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "pwamock": "dist/cli.js"
+    "pwamock": "dist/cli/index.js"
   },
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
     "format": "bun x biome format src --write",
     "lint": "bun x biome lint src && bun x biome check src",
     "lint:fix": "bun x biome check src --fix",
-    "build": "bun x tsc && bun build --entrypoints ./src/index.ts ./src/cli.ts --outdir ./dist --target node --minify",
+    "build": "bun x tsc && bun build --entrypoints ./src/index.ts ./src/cli/index.ts --outdir ./dist --target node --minify",
     "test": "bun test unit-test",
     "prepublish": "bun run build",
     "publish": "npm publish --access public",

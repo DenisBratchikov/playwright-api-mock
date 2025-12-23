@@ -1,12 +1,15 @@
 import * as fs from 'node:fs';
-import { SnapshotsStore, isSnapshotFile } from './store';
-import type { LegacySnapshotFile, SnapshotEntry, SnapshotFile } from './types';
-import { atomicWriteFile } from './utils';
+import { SnapshotsStore, isSnapshotFile } from '../core/store';
+import type { LegacySnapshotFile, SnapshotEntry, SnapshotFile } from '../core/types';
+import { atomicWriteFile } from '../core/utils';
 
 export interface ValidationResult {
 	issues: string[];
 }
 
+/**
+ * Migrate a legacy flat snapshot file into the structured v2 format.
+ */
 export const migrateSnapshots = (path: string, targetPath?: string): SnapshotFile | undefined => {
 	if (!fs.existsSync(path)) return undefined;
 	const raw = JSON.parse(fs.readFileSync(path, 'utf-8')) as unknown;
@@ -20,6 +23,9 @@ export const migrateSnapshots = (path: string, targetPath?: string): SnapshotFil
 	return migrated;
 };
 
+/**
+ * Basic validation for duplicate or malformed snapshot entries.
+ */
 export const validateSnapshots = (entries: SnapshotEntry[]): ValidationResult => {
 	const seenKeys = new Set<string>();
 	const issues: string[] = [];
@@ -38,6 +44,9 @@ export const validateSnapshots = (entries: SnapshotEntry[]): ValidationResult =>
 	return { issues };
 };
 
+/**
+ * Snapshot statistics grouped by endpoint and variant.
+ */
 export const snapshotStats = (entries: SnapshotEntry[]) => {
 	const byEndpoint: Record<string, number> = {};
 	const byVariant: Record<string, number> = {};

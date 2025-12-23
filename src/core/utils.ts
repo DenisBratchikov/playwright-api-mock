@@ -4,8 +4,14 @@ import { dirname, join } from 'node:path';
 import type { Request } from '@playwright/test';
 import type { SnapshotKeyInput, UrlNormalizationRules, Variant } from './types';
 
+/**
+ * Ensures we always work with Error instances.
+ */
 export const ensureError = (e: unknown) => (e instanceof Error ? e : new Error(`${e}`));
 
+/**
+ * Deterministic JSON stringifier that orders object keys.
+ */
 export const stableStringify = (value: unknown): string => {
 	const seen = new WeakSet();
 	const stringify = (input: unknown): string => {
@@ -30,12 +36,18 @@ export const stableStringify = (value: unknown): string => {
 	return stringify(value);
 };
 
+/**
+ * Stable hash of any JSON-like value.
+ */
 export const hashObject = (value: unknown): string => {
 	const hash = createHash('sha256');
 	hash.update(stableStringify(value));
 	return hash.digest('hex');
 };
 
+/**
+ * Atomic file writer to avoid partial writes.
+ */
 export const atomicWriteFile = (path: string, content: string) => {
 	fs.mkdirSync(dirname(path), { recursive: true });
 	const tmpPath = join(dirname(path), `.tmp-${randomUUID()}`);
@@ -43,6 +55,9 @@ export const atomicWriteFile = (path: string, content: string) => {
 	fs.renameSync(tmpPath, path);
 };
 
+/**
+ * Default URL normalization including query filtering and ordering.
+ */
 export const normalizeUrlDefault = (url: string, rules: UrlNormalizationRules = {}): string => {
 	const parsed = new URL(url);
 	let pathname = parsed.pathname;
@@ -89,6 +104,9 @@ export const normalizeUrlDefault = (url: string, rules: UrlNormalizationRules = 
 	return `${parsed.origin}${pathname}${query ? `?${query}` : ''}`;
 };
 
+/**
+ * Evaluate whether a route rule matches the request.
+ */
 export const resolveMatch = async (
 	match: RegExp | string | ((req: Request) => boolean | Promise<boolean>),
 	req: Request,
@@ -102,6 +120,9 @@ export const resolveMatch = async (
 	return await match(req);
 };
 
+/**
+ * Default snapshot key builder: METHOD + normalized URL (+ variant/body hash).
+ */
 export const buildDefaultKey = (input: SnapshotKeyInput): string => {
 	const base = `${input.method.toUpperCase()} ${input.normalizedUrl}`;
 	const suffix: string[] = [];
@@ -114,6 +135,9 @@ export const buildDefaultKey = (input: SnapshotKeyInput): string => {
 	return suffix.length > 0 ? `${base} | ${suffix.join(' | ')}` : base;
 };
 
+/**
+ * Deterministic variant stringifier for use in keys.
+ */
 export const variantToString = (variant: Variant | undefined): string | undefined => {
 	if (variant === undefined) return undefined;
 	if (typeof variant === 'string') return variant;

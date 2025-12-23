@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as fs from 'node:fs';
-import { migrateSnapshots, snapshotStats, validateSnapshots } from './maintenance';
-import { SnapshotsStore } from './store';
+import { SnapshotsStore } from '../core/store.js';
+import { migrateSnapshots, snapshotStats, validateSnapshots } from '../maintenance/index.js';
 
 const inferStorage = (path: string) => {
 	if (fs.existsSync(path) && fs.lstatSync(path).isDirectory()) {

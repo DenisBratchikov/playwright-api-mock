@@ -1,10 +1,23 @@
 import type { Page, Request, Route } from '@playwright/test';
 
+/**
+ * Allowed response headers to persist in snapshots.
+ */
 export type StoresHeaders = Record<string, string>;
+
+/**
+ * Log verbosity levels supported by the plugin.
+ */
 export type LogLevel = 'silent' | 'error' | 'info';
 
+/**
+ * Optional variant/persona dimension attached to snapshots.
+ */
 export type Variant = string | number | boolean | Record<string, unknown>;
 
+/**
+ * Legacy snapshot layout (flat map keyed by URL).
+ */
 export interface StoredSnapshots {
 	[key: string]: {
 		status: number;
@@ -19,9 +32,12 @@ export type Mode = 'record' | 'mock' | 'auto';
 export type OnMissingSnapshot = 'fail' | 'passthrough' | 'record';
 export type OnMismatch = 'fail' | 'warn';
 
+/**
+ * Rules for URL normalization before generating snapshot keys.
+ */
 export interface UrlNormalizationRules {
 	/**
-	 * When true, drop all query parameters from the URL before matching.
+	 * Drop all query parameters before matching.
 	 */
 	stripQuery?: boolean;
 	/**
@@ -42,6 +58,9 @@ export interface UrlNormalizationRules {
 	pathRewriters?: Array<{ pattern: RegExp; replace: string }>;
 }
 
+/**
+ * Strategy for generating snapshot keys.
+ */
 export interface KeyStrategy {
 	name?: string;
 	/**
@@ -62,6 +81,9 @@ export interface KeyStrategy {
 	bodyFieldExtractor?: (body: unknown) => unknown;
 }
 
+/**
+ * Per-route override configuration.
+ */
 export interface RuleConfig {
 	match: RegExp | string | ((req: Request) => boolean | Promise<boolean>);
 	key?: string | ((input: SnapshotKeyInput) => string | Promise<string>);
@@ -73,6 +95,9 @@ export interface RuleConfig {
 	keyFn?: (input: SnapshotKeyInput) => string | Promise<string>;
 }
 
+/**
+ * Snapshot storage configuration.
+ */
 export interface StorageConfig {
 	type: 'file' | 'dir';
 	path: string;
@@ -84,6 +109,9 @@ export interface StoreConfig {
 	apiSnapshotsPath?: string;
 }
 
+/**
+ * Primary plugin configuration.
+ */
 export interface PluginConfig extends StoreConfig {
 	urlMatch: string | RegExp;
 	logLevel: LogLevel;
@@ -104,6 +132,9 @@ export interface PluginConfig extends StoreConfig {
 	onMissingSnapshotBehavior?: OnMissingSnapshot;
 }
 
+/**
+ * Shared context passed into hook callbacks.
+ */
 export interface HookContext {
 	page: Page;
 	request: Request;
@@ -111,6 +142,9 @@ export interface HookContext {
 	config: PluginConfig;
 }
 
+/**
+ * Inputs to snapshot key generation.
+ */
 export interface SnapshotKeyInput {
 	method: string;
 	normalizedUrl: string;
@@ -119,6 +153,9 @@ export interface SnapshotKeyInput {
 	url: string;
 }
 
+/**
+ * Metadata stored alongside snapshots for debuggability.
+ */
 export interface SnapshotMetadata {
 	recordedAt: string;
 	playwrightVersion?: string;
@@ -144,6 +181,9 @@ export interface SnapshotEntry {
 	meta: SnapshotMetadata;
 }
 
+/**
+ * Snapshot file layout (v2).
+ */
 export interface SnapshotFile {
 	version: 2;
 	entries: Record<string, SnapshotEntry>;

@@ -13,6 +13,9 @@ const ensureDir = (path: string) => {
 
 const readJson = (path: string): unknown => JSON.parse(fs.readFileSync(path, 'utf-8'));
 
+/**
+ * Snapshot storage supporting single-file and directory layouts.
+ */
 export class SnapshotsStore {
 	private storagePath: string;
 	private storageType: StoreConfig['storage']['type'];
@@ -64,14 +67,23 @@ export class SnapshotsStore {
 		}
 	}
 
+	/**
+	 * Retrieve a snapshot by key, falling back to legacy layout if present.
+	 */
 	getStoredSnapshot(key: string, legacyKey?: string) {
 		return this.entries[key] ?? this.legacySnapshots?.[legacyKey ?? key];
 	}
 
+	/**
+	 * Enumerate stored snapshot entries.
+	 */
 	listEntries(): SnapshotEntry[] {
 		return Object.values(this.entries);
 	}
 
+	/**
+	 * Store a response in the snapshot store (record mode).
+	 */
 	async storeResponse(key: string, response: APIResponse, entry: Omit<SnapshotEntry, 'response'>) {
 		const headers = this.getStoredHeaders?.(response.headers());
 		const contentType = response.headers()['content-type'] ?? '';
@@ -99,6 +111,9 @@ export class SnapshotsStore {
 		}
 	}
 
+	/**
+	 * Save a prepared snapshot entry.
+	 */
 	saveEntry(snapshot: SnapshotEntry) {
 		this.entries[snapshot.key] = snapshot;
 		if (this.storageType === 'file') {
@@ -108,6 +123,9 @@ export class SnapshotsStore {
 		}
 	}
 
+	/**
+	 * Persist all entries into a single JSON file.
+	 */
 	private writeToFile() {
 		const orderedEntries = Object.fromEntries(Object.entries(this.entries).sort(([a], [b]) => a.localeCompare(b)));
 		const file: SnapshotFile = {
@@ -118,6 +136,9 @@ export class SnapshotsStore {
 		atomicWriteFile(this.storagePath, content);
 	}
 
+	/**
+	 * Persist a single snapshot into a per-key JSON file.
+	 */
 	private writeToDirectory(entry: SnapshotEntry) {
 		const digest = createHash('sha256').update(entry.key).digest('hex');
 		const filePath = join(this.storagePath, `${digest}.json`);
@@ -129,6 +150,9 @@ export class SnapshotsStore {
 		this.directoryIndex[entry.key] = filePath;
 	}
 
+	/**
+	 * Convert legacy flat snapshots into v2 layout.
+	 */
 	static migrateLegacySnapshots(
 		legacy: LegacySnapshotFile,
 		options: { method?: string; normalization?: string },
