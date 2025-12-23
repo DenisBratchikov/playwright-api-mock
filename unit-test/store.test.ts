@@ -1,48 +1,67 @@
 import { SnapshotsStore } from '../src/store';
 import { test, expect } from 'bun:test';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import type { APIResponse } from '@playwright/test';
 
 function createTempDir() {
   return mkdtempSync(join(tmpdir(), 'store-'));
 }
 
-test('stores responses on disk', async () => {
+test('stores snapshots in a single file with metadata', () => {
   const dir = createTempDir();
   const file = join(dir, 'snap.json');
-  const store = new SnapshotsStore({ apiSnapshotsPath: file });
+  const store = new SnapshotsStore({ storage: { type: 'file', path: file } });
 
-  const response = {
-    async json() { return { ok: true }; },
-    status() { return 201; },
-    headers() { return { 'content-type': 'application/json' }; },
-  } as unknown as APIResponse;
+  store.saveEntry({
+    key: 'GET http://example.com/users',
+    request: {
+      url: 'http://example.com/users',
+      normalizedUrl: 'http://example.com/users',
+      method: 'GET',
+    },
+    response: {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+      body: { ok: true },
+    },
+    meta: {
+      recordedAt: 'now',
+      keyStrategy: 'method-url',
+      normalization: {},
+    },
+  });
 
-  await store.storeResponse('key', response);
   const saved = JSON.parse(readFileSync(file, 'utf-8'));
-  expect(saved.key.status).toBe(201);
-  expect(saved.key.body.ok).toBe(true);
+  expect(saved.version).toBe(2);
+  expect(saved.entries['GET http://example.com/users'].response.body.ok).toBe(true);
   rmSync(dir, { recursive: true, force: true });
 });
 
-test('applies header filter', async () => {
+test('stores snapshots in directory mode', () => {
   const dir = createTempDir();
-  const file = join(dir, 'snap.json');
-  const store = new SnapshotsStore({
-    apiSnapshotsPath: file,
-    getStoredHeaders: (h) => ({ 'content-type': h['content-type'] }),
+  const store = new SnapshotsStore({ storage: { type: 'dir', path: dir } });
+
+  store.saveEntry({
+    key: 'key-1',
+    request: { url: 'u', normalizedUrl: 'u', method: 'GET' },
+    response: { status: 200, body: 'text' },
+    meta: { recordedAt: 'now', keyStrategy: 'method-url', normalization: {} },
   });
 
-  const response = {
-    async json() { return { a: 1 }; },
-    status() { return 200; },
-    headers() { return { 'content-type': 'application/json', other: 'x' }; },
-  } as unknown as APIResponse;
+  const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
+  expect(files.length).toBeGreaterThan(0);
+  rmSync(dir, { recursive: true, force: true });
+});
 
-  await store.storeResponse('url', response);
-  const snap = store.getStoredSnapshot('url');
-  expect(snap?.headers).toStrictEqual({ 'content-type': 'application/json' });
+test('migrates legacy snapshots', () => {
+  const dir = createTempDir();
+  const file = join(dir, 'legacy.json');
+  writeFileSync(file, JSON.stringify({ 'http://api/user': { status: 200, body: { a: 1 } } }));
+
+  const store = new SnapshotsStore({ storage: { type: 'file', path: file } });
+  const entries = store.listEntries();
+  expect(entries[0].key).toBe('GET http://api/user');
+  expect(entries[0].response.body).toEqual({ a: 1 });
   rmSync(dir, { recursive: true, force: true });
 });

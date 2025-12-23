@@ -5,18 +5,21 @@
   "files": ["dist"],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "pwamock": "dist/cli.js"
+  },
   "type": "module",
   "scripts": {
 		"postinstall": "npx playwright install chromium",
     "format": "bun x biome format src --write",
     "lint": "bun x biome lint src && bun x biome check src",
     "lint:fix": "bun x biome check src --fix",
-    "build": "bun x tsc && bun build --entrypoints ./src/index.ts --outdir ./dist --target node --minify",
+    "build": "bun x tsc && bun build --entrypoints ./src/index.ts ./src/cli.ts --outdir ./dist --target node --minify",
     "test": "bun test unit-test",
     "prepublish": "bun run build",
     "publish": "npm publish --access public",
 		"demo:start": "bun run test/server.js",
-    "demo:test": "playwright test -c test/playwright.config.ts"
+    "demo:test": "bun run build && playwright test -c test/playwright.config.ts"
   },
   "repository": {
     "type": "git",
